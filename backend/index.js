@@ -5,7 +5,7 @@ const io = new Server(8000,{
 });
 
 io.on("connection", (socket) => {
-  console.log(`socket connected @ ${socket.id}`);
+//   console.log(`socket connected @ ${socket.id}`);
   const emailToSocketMap = new Map()
   const socketToEmailMap =  new Map();
 
@@ -18,5 +18,20 @@ io.on("connection", (socket) => {
    socket.join(room)
 
    io.to(socket.id).emit('room:join',data)
+  })
+
+  socket.on('user:call',({to,offer})=>{
+    io.to(to).emit('incomming:call',{from:socket.id,offer})
+  })
+  socket.on('call:accepted',({to,ans})=>{
+    io.to(to).emit('call:accepted',{from:socket.id,ans})
+  })
+
+  socket.on('perr:nego:needed',({to,offer})=>{
+    io.to(to).emit('perr:nego:needed',{from:socket.id,offer})
+  })
+
+   socket.on('perr:nego:done',({to,ans})=>{
+    io.to(to).emit('perr:nego:final',{from:socket.id,ans})
   })
 });
